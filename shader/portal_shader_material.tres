@@ -1,0 +1,8 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://bgmtwj70qf2yd"]
+
+[ext_resource type="Shader" uid="uid://c42hbalwl5kvn" path="res://shader/protal.gdshader" id="1_m63uy"]
+
+[resource]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("1_m63uy")

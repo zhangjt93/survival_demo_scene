@@ -1,0 +1,35 @@
+[gd_scene format=3 uid="uid://digt1vre2ru0f"]
+
+[ext_resource type="Script" uid="uid://b8ffc26308ast" path="res://scripts/portal.gd" id="1_pno75"]
+[ext_resource type="Shader" uid="uid://c42hbalwl5kvn" path="res://shader/protal.gdshader" id="2_pno75"]
+[ext_resource type="PackedScene" uid="uid://b6hb2byy8a2xc" path="res://scene/portal_area.tscn" id="3_cfsmh"]
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_pno75"]
+viewport_path = NodePath("SubViewport")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_pno75"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("2_pno75")
+shader_parameter/texture_albedo = SubResource("ViewportTexture_pno75")
+
+[node name="Portal" type="Node3D" unique_id=1854484872]
+script = ExtResource("1_pno75")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="." unique_id=809735575]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0001347363, -0.0085017085, -0.014770508)
+size = Vector3(1.824, 1.873, 0.05)
+material = SubResource("ShaderMaterial_pno75")
+
+[node name="SubViewport" type="SubViewport" parent="." unique_id=307606123]
+unique_name_in_owner = true
+
+[node name="VirtualCamera" type="Camera3D" parent="SubViewport" unique_id=963595554]
+unique_name_in_owner = true
+
+[node name="FrontArea" parent="." unique_id=1218005505 instance=ExtResource("3_cfsmh")]
+unique_name_in_owner = true
+
+[node name="RearArea" parent="." unique_id=139234759 instance=ExtResource("3_cfsmh")]
+unique_name_in_owner = true

@@ -1,0 +1,99 @@
+[gd_scene format=4 uid="uid://ddqlyv5ef8epu"]
+
+[ext_resource type="PackedScene" uid="uid://w0ppny7vhffk" path="res://scene/env.tscn" id="1_t705u"]
+[ext_resource type="Script" uid="uid://dx1uut8mg4c4u" path="res://scripts/world_scene.gd" id="1_w5boh"]
+[ext_resource type="PackedScene" uid="uid://bfva43mdw6aey" path="res://scene/character_body_3d.tscn" id="2_0chi8"]
+[ext_resource type="PackedScene" uid="uid://digt1vre2ru0f" path="res://scene/portal.tscn" id="4_w5boh"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_xg0kb"]
+sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+
+[sub_resource type="Sky" id="Sky_0chi8"]
+sky_material = SubResource("ProceduralSkyMaterial_xg0kb")
+
+[sub_resource type="Environment" id="Environment_w5boh"]
+background_mode = 2
+sky = SubResource("Sky_0chi8")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tlhl3"]
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_kecp5"]
+_surfaces = [{
+"aabb": AABB(-1, -1, -0.10145545, 2, 2, 0.17118502),
+"format": 34359742465,
+"index_count": 144,
+"index_data": PackedByteArray("BQAQABEAEQAQABIABQAAABAACQAFABEAAAATABAAEwASABAABQAEAAAACQAHAAUABQAHAAQACQARABQACQAOAAcAEQASABUAFAARABUAAgAJABQAAgAOAAkAAgAUABMAAAACABMAAAABAAIAAgABAA4AAAAEAAEAFAAVABYAEwAUABYAEwAWABcAEwAXABIACgAWABUACwAXABYACgALABYADQASABcACwANABcAAwAVABIAAwAKABUADQADABIACwAKAAgADQALAA8ACwAIAA8ACgAGAAgACgADAAYABAAIAAYABAAHAAgABwAPAAgAAQAEAAYABwAOAA8ADgABAAwAAQAGAAwADgAMAA8AAwAMAAYADQAPAAwAAwANAAwA"),
+"lods": [0.00080323213, PackedByteArray("AAABAAIAAgADAAAAAAAEAAEABQAEAAAABQAAAAMAAQAEAAYABQAHAAQABAAIAAYABAAHAAgACQAHAAUACgAGAAgACgADAAYABQADAAoACwAFAAoACwAKAAgACQAFAAsAAgAJAAsAAwAMAAYAAQAGAAwAAgANAAMAAwANAAwAAgALAA0AAgAOAAkAAgABAA4ADgABAAwACQAOAAcADQALAA8ADQAPAAwADgAMAA8ABwAOAA8ACwAIAA8ABwAPAAgA")],
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 24,
+"vertex_data": PackedByteArray("+Ippv/lxbD/gx8+9AACAvwAAgL/gx8+9+Ippv0xIcb/gx8+9+Ippv/lxbD9gzo49AACAvwAAgD/gx8+9+IppP/lxbD/gx8+9AACAvwAAgD9gzo49AACAPwAAgD/gx8+9AACAPwAAgD9gzo49+IppP0xIcb/gx8+9+IppP/lxbD9gzo49+IppP0xIcb9gzo49AACAvwAAgL9gzo49+Ippv0xIcb9gzo49AACAPwAAgL/gx8+9AACAPwAAgL9gzo49+Ippv/lxbD+IM5u9+IppP/lxbD+IM5u9+Ippv/lxbD8QdDQ9+Ippv0xIcb+IM5u9+IppP0xIcb+IM5u9+IppP/lxbD8QdDQ9+IppP0xIcb8QdDQ9+Ippv0xIcb8QdDQ9")
+}]
+blend_shape_mode = 0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_7y51c"]
+resource_name = "portal1_立方体"
+_surfaces = [{
+"aabb": AABB(-1, -1, -0.10145545, 2, 2, 0.17118502),
+"attribute_data": PackedByteArray("YDEdP18xPT8AAMA+AABAP0KdxT5gMT0/AADAPgAAAD8AACA/AABAP0KdxT6izgI/XzEdP6HOAj8AACA/AAAAP2AxHT9fMT0/AADAPgAAQD8AACA/AABAP0KdxT5gMT0/XzEdP6HOAj8AAMA+AAAAPwAAID8AAAA/Qp3FPqLOAj8AAMA+AABAPwAAID8AAEA/AADAPgAAQD8AACA/AABAPwAAID8AAAA/AADAPgAAAD8AACA/AAAAPwAAwD4AAAA/AADAPgAAAD8AAMA+AABAPwAAwD4AAAA/AADAPgAAQD8AACA/AABAPwAAID8AAAA/AAAgPwAAQD8AACA/AAAAP0KdxT6izgI/XzEdP6HOAj9CncU+os4CP18xHT+hzgI/Qp3FPmAxPT9CncU+os4CP0KdxT6izgI/Qp3FPmAxPT9CncU+YDE9P2AxHT9fMT0/YDEdP18xPT9CncU+YDE9P18xHT+hzgI/YDEdP18xPT9fMR0/oc4CP2AxHT9fMT0/YDEdP18xPT9fMR0/oc4CP2AxHT9fMT0/XzEdP6HOAj9CncU+YDE9P0KdxT6izgI/Qp3FPmAxPT9CncU+os4CP0KdxT5gMT0/YDEdP18xPT9gMR0/XzE9P0KdxT5gMT0/XzEdP6HOAj9CncU+os4CP18xHT+hzgI/Qp3FPqLOAj8="),
+"format": 34359742487,
+"index_count": 144,
+"index_data": PackedByteArray("LAAwADEALAAvADAAMQAwADIAMQAyADMALQAzADIALQAuADMAAAABAAIAAgABAAMAAAAEAAEAAgADAAUABgAEAAAABQADAAcABgAHAAQABQAHAAYAJgA0ADUAJgAnADQANgA1ADQANgA3ADUAJAA3ADYAJAAlADcACAAJAAoACAALAAkADAAIAAoACwANAAkADAAKAA4ACwAPAA0ADwAMAA4ADwAOAA0AEAARABIAEAATABEAFAAVABYAFAAXABUAGAAZABoAGAAbABkAHAAdAB4AHAAfAB0AKgA4ADkAKgAoADgAOAA6ADkAOAA7ADoAKwA6ADsAKwApADoAIAA8AD0AIAAhADwAPQA8AD4APQA+AD8AIwA/AD4AIwAiAD8A"),
+"lods": [0.00080323213, PackedByteArray("AAABAAIAAgABAAMAAAAEAAEAAgADAAUABgAEAAAABQADAAcABgAHAAQABQAHAAYACAAJAAoACAALAAkADAAIAAoACwANAAkADAAKAA4ACwAPAA0ADwAMAA4ADwAOAA0AEAARABIAEAATABEAFAAVABYAFAAXABUAGAAZABoAGAAbABkAHAAdAB4AHAAfAB0AIAAhACIAIgAhACMAJAAlACYAJAAmACcAKAApACoAKAArACkALAAtAC4ALAAvAC0A")],
+"material": SubResource("StandardMaterial3D_tlhl3"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 64,
+"vertex_data": PackedByteArray("+Ippv/lxbD/gx8+9AACAvwAAgL/gx8+9+Ippv0xIcb/gx8+9AACAPwAAgL/gx8+9AACAvwAAgD/gx8+9+IppP0xIcb/gx8+9+IppP/lxbD/gx8+9AACAPwAAgD/gx8+9+Ippv/lxbD9gzo49AACAvwAAgL9gzo49AACAvwAAgD9gzo49+Ippv0xIcb9gzo49+IppP/lxbD9gzo49AACAPwAAgL9gzo49AACAPwAAgD9gzo49+IppP0xIcb9gzo49AACAvwAAgL/gx8+9AACAvwAAgD9gzo49AACAvwAAgL9gzo49AACAvwAAgD/gx8+9AACAPwAAgD/gx8+9AACAPwAAgL9gzo49AACAPwAAgD9gzo49AACAPwAAgL/gx8+9AACAPwAAgL/gx8+9AACAvwAAgL9gzo49AACAPwAAgL9gzo49AACAvwAAgL/gx8+9AACAvwAAgD/gx8+9AACAPwAAgD9gzo49AACAvwAAgD9gzo49AACAPwAAgD/gx8+9+IppP0xIcb/gx8+9+IppP/lxbD/gx8+9+IppP0xIcb9gzo49+IppP/lxbD9gzo49+Ippv0xIcb/gx8+9+IppP0xIcb/gx8+9+IppP0xIcb9gzo49+Ippv0xIcb9gzo49+Ippv0xIcb/gx8+9+Ippv/lxbD9gzo49+Ippv/lxbD/gx8+9+Ippv0xIcb9gzo49+IppP/lxbD/gx8+9+Ippv/lxbD9gzo49+IppP/lxbD9gzo49+Ippv/lxbD/gx8+9+Ippv/lxbD+IM5u9+IppP/lxbD+IM5u9+Ippv/lxbD8QdDQ9+IppP/lxbD8QdDQ9+Ippv0xIcb8QdDQ9+IppP0xIcb8QdDQ9+Ippv0xIcb+IM5u9+IppP0xIcb+IM5u9+Ippv0xIcb+IM5u9+Ippv/lxbD+IM5u9+Ippv/lxbD8QdDQ9+Ippv0xIcb8QdDQ9+IppP/lxbD+IM5u9+IppP0xIcb+IM5u9+IppP/lxbD8QdDQ9+IppP0xIcb8QdDQ9//////9//////////3/+////////f/7///////9//v///////3//////////f/7///////9//////////3////9//3//fwAA/3//f/9/AAD/f/9//38AAP9//3//fwAA/3//f/9/AAD/f/9//38AAP9//3//fwAA/3//f/9/AAAAAP9/////vwAA/3////+/AAD/f////78AAP9/////v////3////+/////f////7////9/////v////3////+//38AAP///7//fwAA////v/9/AAD///+//38AAP///7//f///////v/9///////+//3///////7//f///////vwAA/3////+/AAD/f////78AAP9/////vwAA/3////+//3///////7//f///////v/9///////+//3///////7////9/////v////3////+/////f////7////9/////v/9/AAD///+//38AAP///7//fwAA////v/9/AAD///+//38AAP///7//fwAA////v/9/AAD///+//38AAP///7//f///////v/9///////+//3///////7//f///////v////3////+/////f////7////9/////v////3////+/AAD/f////78AAP9/////vwAA/3////+/AAD/f////78=")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_kecp5")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3vofc"]
+albedo_color = Color(1, 0, 0, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_56wqf"]
+albedo_color = Color(0, 0, 1, 1)
+
+[node name="WorldScene" type="Node3D" unique_id=1719285228]
+script = ExtResource("1_w5boh")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1430726786]
+environment = SubResource("Environment_w5boh")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1915319127]
+transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
+shadow_enabled = true
+
+[node name="Env" parent="." unique_id=480002329 instance=ExtResource("1_t705u")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00068569183, -2.8848648e-05, 0.00073337555)
+
+[node name="CharacterBody3D" parent="." unique_id=379351669 instance=ExtResource("2_0chi8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.9977865, -9.536743e-07, 5.4334903)
+
+[node name="Portals" type="Node3D" parent="." unique_id=1913494068]
+
+[node name="RedDoor" type="Node3D" parent="Portals" unique_id=2129435829]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.60874, 0.994297, 8.532951)
+
+[node name="DoorFrame" type="MeshInstance3D" parent="Portals/RedDoor" unique_id=1057187831]
+mesh = SubResource("ArrayMesh_7y51c")
+skeleton = NodePath("")
+surface_material_override/0 = SubResource("StandardMaterial3D_3vofc")
+
+[node name="RedPortal" parent="Portals/RedDoor" unique_id=1854484872 node_paths=PackedStringArray("target_portal") instance=ExtResource("4_w5boh")]
+target_portal = NodePath("../../BlueDoor/BluePortal")
+
+[node name="BlueDoor" type="Node3D" parent="Portals" unique_id=1297051105]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.118236, 0.9927473, 2.712482)
+
+[node name="DoorFrame" type="MeshInstance3D" parent="Portals/BlueDoor" unique_id=487256666]
+mesh = SubResource("ArrayMesh_7y51c")
+skeleton = NodePath("")
+surface_material_override/0 = SubResource("StandardMaterial3D_56wqf")
+
+[node name="BluePortal" parent="Portals/BlueDoor" unique_id=301087942 node_paths=PackedStringArray("target_portal") instance=ExtResource("4_w5boh")]
+target_portal = NodePath("../../RedDoor/RedPortal")
