@@ -7,7 +7,8 @@ const EXIT_CAMERA_NEAR_MIN: float = 0.01
 @export var target_portal:Portal
 ## 传送门渲染的视觉层。设置为与关卡和模型不同的层。
 ## 用于在相机视图中隐藏目标传送门，这样就能透过传送门看到另一侧。
-@export_flags_3d_render var cull_layer : int = 4
+## 这里不用@export_flags_3d_render，是因为set_layer_mask_value的参数是层级语义，而@export_flags_3d_render是掩码语义
+@export var cull_layer : int = 4
 ## 近裁面偏移量，从四个角投影距离的最小值中减去此值，提供安全边际防止边缘裁切。
 @export var exit_near_subtract: float = 0.05
 ## 传送门碰撞体的边距（前后/左右/上下）
@@ -27,6 +28,22 @@ const EXIT_CAMERA_NEAR_MIN: float = 0.01
 # Ghost 节点只设此层，主摄像机关闭此层，仅 VirtualCamera 开启此层，
 # 从而确保 Ghost 只在传送门画面中可见，不会被主摄像机直接看到。
 var _my_ghost_layer: int
+
+# --- 追踪状态 ---
+# _in_front / _in_rear: 记录哪些 CharacterBody3D 当前在前/后检测区域内
+var _in_front: Dictionary = {}
+var _in_rear: Dictionary = {}
+# _prev_z: 每个被追踪物体在上一帧的本地 z 坐标（使用相机位置计算），
+# 用于检测物体是否穿越了传送门平面（z=0）
+var _prev_z: Dictionary = {}
+# _cooldowns: 传送后的帧冷却计数，防止因 Area3D 信号时序问题导致的同帧重复传送
+var _cooldowns: Dictionary = {}
+# _ghosts: 物体实例 ID → Ghost 根节点，用于在传送门画面中显示物体的镜像
+var _ghosts: Dictionary = {}
+# _camera_near_backup: 物体实例 ID → 主相机原始 near 值，
+# 进入传送门区域时备份并在离开时恢复
+var _camera_near_backup: Dictionary = {}
+
 
 # 如果物体在穿过传送门时移动超过此距离，则认为是传送（而非行走穿过）
 # 用于防止通过其他能力传送时误触传送门移动
@@ -54,20 +71,16 @@ func _ready() -> void:
 	# 分配本传送门专属的 Ghost 渲染层（第一个 Portal 得到 Layer 5，第二个 Layer 6，以此类推）
 	_my_ghost_layer = 5 + _all_ghost_layers.size()
 	_all_ghost_layers.append(_my_ghost_layer)
-	# - 关闭层1（让传送门在主相机中不可见）
+	# - 关闭默认层1（让传送门在主相机中不可见）
 	portal_visual.set_layer_mask_value(1, false)
 	# - 开启cull_layer层（用于渲染传送门视觉效果）
 	portal_visual.set_layer_mask_value(cull_layer, true)
-	
-	# 设置传送门相机的剔除掩码，关闭目标传送门所在层
-	# 这样相机就看不到目标传送门，可以渲染另一侧的画面
-	virtual_camera.set_cull_mask_value(target_portal.cull_layer, false)
 	_update_portal_area_size()
 	_set_portal_camera_env()
 	_connect_area_signals()
 	
 # 渲染帧回调：更新虚拟相机位置 + 同步所有 Ghost 节点变换
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	_update_virtual_camera()
 	_update_ghosts()
 
@@ -135,6 +148,8 @@ func _update_virtual_camera():
 	virtual_camera.fov = cur_camera.fov
 	
 	# 复制相机的剔除掩码，隐藏目标传送门层 + 开启本传送门的 Ghost 层
+	# 设置传送门相机的剔除掩码，关闭目标传送门所在层
+	# 这样相机就看不到目标传送门，可以渲染另一侧的画面
 	virtual_camera.cull_mask = cur_camera.cull_mask
 	virtual_camera.set_cull_mask_value(target_portal.cull_layer, false)
 	virtual_camera.set_cull_mask_value(_my_ghost_layer, true)
@@ -168,21 +183,6 @@ func _update_portal_area_size():
 #endregion
 
 #region 传送
-# --- 追踪状态 ---
-# _in_front / _in_rear: 记录哪些 CharacterBody3D 当前在前/后检测区域内
-var _in_front: Dictionary = {}
-var _in_rear: Dictionary = {}
-# _prev_z: 每个被追踪物体在上一帧的本地 z 坐标（使用相机位置计算），
-# 用于检测物体是否穿越了传送门平面（z=0）
-var _prev_z: Dictionary = {}
-# _cooldowns: 传送后的帧冷却计数，防止因 Area3D 信号时序问题导致的同帧重复传送
-var _cooldowns: Dictionary = {}
-# _ghosts: 物体实例 ID → Ghost 根节点，用于在传送门画面中显示物体的镜像
-var _ghosts: Dictionary = {}
-# _camera_near_backup: 物体实例 ID → 主相机原始 near 值，
-# 进入传送门区域时备份并在离开时恢复
-var _camera_near_backup: Dictionary = {}
-
 # 连接前后检测区域的 body_entered / body_exited 信号
 func _connect_area_signals():
 	front_area.connect_body_signals(_on_front_entered, _on_front_exited)
@@ -423,27 +423,70 @@ func _restore_camera_near(body: Node3D):
 # 当主相机非常靠近传送门时（距离 < 1.0），将 CSGBox3D 的深度从 0.05 增到 0.3，
 # 并向相机所在侧的反方向偏移，作为近裁面修复的双重保险。
 # 远离时恢复为极小值（0.00001），保持正常视觉效果。
+# 当主相机非常靠近传送门时，加厚传送门视觉体（CSGBox3D）并整体向远离相机的方向偏移，
+# 作为近裁面修复（_apply_camera_near_fix）的双重保险，防止近裁面裁剪掉传送门视觉面。
+#
+# 原理：
+#   相机的 near plane 会裁掉距离过近的物体。传送门视觉面默认极薄，
+#   当相机靠近时很容易被裁掉，导致玩家看到传送门背后的环境而非传送门画面。
+#   加厚 + 偏移可以让整个视觉体退到近裁面的安全距离之外。
+#
+#   仅加厚不偏移 → 厚体以传送门平面为中心向两侧扩展，朝向相机的那一面反而凸出来，
+#                    离相机更近，更容易被裁。
+#   加厚 + 偏移   → 整体往远离相机方向推，朝向相机的那一面退回到传送门平面位置，
+#                    整个体都在远离相机的方向上，近裁面裁不到。
 func _thicken_portal_if_necessary():
+	# 获取当前主相机，没有相机则无需处理
 	var cur_camera = get_viewport().get_camera_3d()
 	if not cur_camera:
 		return
+
+	# 取出传送门本地坐标系的三个轴方向
+	# forward(z)：传送门正面朝向（前方为z+，后方为z-）
+	# right(x)： 传送门左右方向
+	# up(y)：    传送门上下方向
 	var forward := self.global_transform.basis.z
 	var right := self.global_transform.basis.x
 	var up := self.global_transform.basis.y
+
+	# 从传送门中心指向相机的向量
 	var offset: Vector3 = cur_camera.global_position - self.global_position
+
+	# 用点积将偏移向量投影到传送门的三个轴上，
+	# 得到相机在传送门本地坐标系中的三个分量：
+	#   dist_forward > 0 → 相机在传送门前方（z+侧）
+	#   dist_forward < 0 → 相机在传送门后方（z-侧）
+	#   dist_right / dist_up → 相机偏移传送门中心的左右/上下距离
 	var dist_forward: float = offset.dot(forward)
 	var dist_right: float = offset.dot(right)
 	var dist_up: float = offset.dot(up)
+
+	# 传送门视觉面的半宽和半高，用于判断相机是否在传送门的范围内
 	var half_w := portal_visual.size.x / 2.0
 	var half_h := portal_visual.size.y / 2.0
-	# 相机距离足够远或不在传送门范围内 → 恢复为极薄
-	if abs(dist_forward) > 1.0 or abs(dist_right) > half_w + 0.3 or dist_up > half_h + 0.3:
+
+	# 判断相机是否远离传送门或不在传送门正前方范围内：
+	#   - 前后距离 > 1.0 米：太远，近裁面不会裁到这里
+	#   - 左右超出传送门宽度 + 0.3 米的容差：相机不在传送门正前方
+	#   - 上下超出传送门高度 + 0.3 米的容差：相机不在传送门正前方
+	# 满足任一条件 → 不需要加厚，恢复为极薄（接近0），位置回到中心
+	if abs(dist_forward) > 1.0 or abs(dist_right) > half_w + 0.3 or abs(dist_up) > half_h + 0.3:
 		portal_visual.size.z = 0.00001
 		portal_visual.position.z = 0.0
 		return
-	# 相机靠近 → 加厚并向相机反方向偏移
+
+	# 相机靠近传送门且在范围内 → 将视觉体深度设为 0.3 米
 	var thickness := 0.3
 	portal_visual.size.z = thickness
+
+	# 根据相机所在的一侧，将整个厚体向远离相机的方向偏移半个厚度：
+	#
+	#   以相机在前方（z+侧）为例：
+	#     position.z = -0.15
+	#     厚体范围：z = -0.15 到 z = +0.15（无偏移）→ z = -0.3 到 z = 0（偏移后）
+	#     朝向相机的那一面从 z = +0.15 退回到 z = 0，远离了相机
+	#
+	#   相机在后方（z-侧）则反向偏移，同理
 	if _nonzero_sign(dist_forward) == 1:
 		portal_visual.position.z = -thickness / 2.0
 	else:

@@ -72,7 +72,7 @@ shadow_enabled = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00068569183, -2.8848648e-05, 0.00073337555)
 
 [node name="CharacterBody3D" parent="." unique_id=379351669 instance=ExtResource("2_0chi8")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.9977865, -9.536743e-07, 5.4334903)
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -10.9977865, 3.0350878, -6.0632043)
 
 [node name="Portals" type="Node3D" parent="." unique_id=1913494068]
 

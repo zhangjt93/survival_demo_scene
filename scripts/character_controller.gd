@@ -14,22 +14,13 @@ const CAMERA_Y_OFFSET = 1.232
 
 @onready var camera:Camera3D = get_viewport().get_camera_3d()
 
-var is_restricted:bool = false
-
 func _ready() -> void:
 	pass
 
-func change_restrict(tag:bool):
-	is_restricted=tag
-
 func _process(delta: float) -> void:
-	if is_restricted:
-		return
 	camera.position.y = lerp(camera.position.y, CAMERA_Y_OFFSET, 1.0 - exp(-CAMERA_SMOOTH_SPEED * delta))
 
 func _physics_process(delta: float) -> void:
-	if is_restricted:
-		return
 	if not is_on_floor():
 		velocity += get_gravity() * delta
 
@@ -48,8 +39,6 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 
 func _unhandled_input(event: InputEvent) -> void:
-	if is_restricted:
-		return
 	var scale_factor:float = min(
 		(float(get_viewport().size.x) / get_viewport().get_visible_rect().size.x),
 		(float(get_viewport().size.y) / get_viewport().get_visible_rect().size.y)
